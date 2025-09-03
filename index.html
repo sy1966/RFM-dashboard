@@ -133,24 +133,43 @@
             // Function to generate random-ish data for a segment over 12 months
             const generateMonthlyData = (base, trend) => Array.from({length: 12}, (_, i) => Math.max(0, Math.round(base + (i * trend) + (Math.random() - 0.5) * base * 0.2)));
 
-            // New detailed mock data structure with specific trends
+            // New detailed mock data structure with specific trends for branches and segments
             const fullCustomerData = {};
             branches.forEach(branch => {
                 fullCustomerData[branch] = {};
                 strategicSegments.forEach(strategic => {
                     let trends;
+
+                    // 1. Start with trends based on the strategic segment
                     if (strategic === 'Member') {
-                        // Upward trend for good segments
                         trends = { champions: 2.5, loyal: 1.5, potential: 1.0, atRisk: -0.5, lost: 0.1 };
                     } else if (strategic === 'Non-member') {
-                        // Downward trend for good segments
                         trends = { champions: -0.8, loyal: -1.5, potential: -1.0, atRisk: 1.0, lost: 0.8 };
                     } else if (strategic === 'Ecom') {
-                        // Strong upward trend, focusing on Potential Loyalists
                         trends = { champions: 1.8, loyal: 2.0, potential: 3.5, atRisk: -1.2, lost: 0.3 };
-                    } else if (strategic === 'Non-Ecom') {
-                        // Strong downward trend, focusing on Potential Loyalists
+                    } else { // Default for Non-Ecom
                         trends = { champions: -0.7, loyal: -1.2, potential: -3.0, atRisk: 1.8, lost: 1.2 };
+                    }
+
+                    // 2. Apply branch-specific overrides and adjustments
+                    switch (branch) {
+                        case 'สาขา A':
+                            // มีแนวโน้มเพิ่มขึ้นของกลุ่มลูกค้าชั้นเลิศ
+                            trends.champions += 2.5; // Significantly boost Champions trend
+                            break;
+                        case 'สาขา B':
+                            // มีแนวโน้มเพิ่มขึ้นของกลุ่มลูกค้าที่มีแวว
+                            trends.potential += 3.0; // Significantly boost Potential Loyalists trend
+                            break;
+                        case 'สาขา C':
+                             // ให้แสดงแนวโน้มลูกค้าที่ต่ำลง เฉพาะลูกค้ามีแวว
+                            trends.potential = -2.5; // Force a strong negative trend for Potential Loyalists
+                            break;
+                        case 'สาขา D':
+                            // ให้แสดงแนวโน้มลูกค้าลดต่ำลง โดยเฉพาะกลุ่มลูกค้า มีแวว และ ลูกค้าประจำ
+                            trends.potential = -4.0; // Force a very strong negative trend for Potential Loyalists
+                            trends.loyal = -2.5;    // Force a strong negative trend for Loyal Customers
+                            break;
                     }
 
                     fullCustomerData[branch][strategic] = {
@@ -164,7 +183,8 @@
             });
 
             const segmentColors = {'Champions (ลูกค้าชั้นเลิศ)':'rgba(21, 128, 61, 0.8)','Loyal Customers (ลูกค้าประจำ)':'rgba(29, 78, 216, 0.8)','Potential Loyalists (ลูกค้าที่มีแวว)':'rgba(252, 211, 77, 0.8)','At-Risk Customers (ลูกค้าที่เสี่ยง)':'rgba(234, 88, 12, 0.8)','Lost Customers (ลูกค้าที่หายไป)':'rgba(185, 28, 28, 0.8)'};
-            const marketingActivitiesData = {'ม.ค.':{promotions:2,newProducts:0,email:10,social:5},'ก.พ.':{promotions:3,newProducts:1,email:12,social:8},'มี.ค.':{promotions:2,newProducts:0,email:10,social:6},'เม.ย.':{promotions:5,newProducts:0,email:15,social:10},'พ.ค.':{promotions:2,newProducts:1,email:11,social:7},'มิ.ย.':{promotions:4,newProducts:0,email:14,social:9},'ก.ค.':{promotions:2,newProducts:1,email:10,social:5},'ส.ค.':{promotions:3,newProducts:0,email:12,social:8},'ก.ย.':{promotions:4,newProducts:2,email:15,social:10},'ต.ค.':{promotions:2,newProducts:0,email:10,social:6},'พ.ย.':{promotions:5,newProducts:1,email:18,social:12},'ธ.ค.':{promotions:6,newProducts:0,email:20,social:15}};
+            // Adjusted Marketing Data: New product launches are increased in mid and late year to correlate with growth trends.
+            const marketingActivitiesData = {'ม.ค.':{promotions:2,newProducts:0,email:10,social:5},'ก.พ.':{promotions:3,newProducts:1,email:12,social:8},'มี.ค.':{promotions:2,newProducts:0,email:10,social:6},'เม.ย.':{promotions:5,newProducts:2,email:15,social:10},'พ.ค.':{promotions:2,newProducts:1,email:11,social:7},'มิ.ย.':{promotions:4,newProducts:3,email:14,social:9},'ก.ค.':{promotions:2,newProducts:1,email:10,social:5},'ส.ค.':{promotions:3,newProducts:2,email:12,social:8},'ก.ย.':{promotions:4,newProducts:3,email:15,social:10},'ต.ค.':{promotions:2,newProducts:1,email:10,social:6},'พ.ย.':{promotions:5,newProducts:4,email:18,social:12},'ธ.ค.':{promotions:6,newProducts:2,email:20,social:15}};
 
             // --- 2. SETUP & INITIALIZATION ---
             const branchSelector = document.getElementById('branchSelector');
